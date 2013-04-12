@@ -1,0 +1,52 @@
+This README file contains information on building the tplino-meta-vmware
+BSP layer. Please see the corresponding sections below for details.
+
+
+Dependencies
+============
+
+This layer depends on:
+  
+  URI: git://github.com/carosio/meta-caros
+  branch: master
+
+
+Patches
+=======
+
+Please submit any patches against this BSP to Travelping (info@travelping.com)
+ 
+
+Table of Contents
+=================
+
+I. Building the meta-vmware BSP layer
+
+
+I. Building the meta-vmware SP layer
+=======================================
+
+In order to build an image with BSP support for a given release, you
+need to clone the tplino-core repository. 
+
+Having done that, and assuming you placed the folder 
+at the top-level of your yocto build tree, you can build a
+vmware image by adding the location of the tplino-meta-vmware
+layer to bblayers.conf, along with any other layers needed (to access
+common metadata shared between BSPs) e.g.:
+
+  yocto/meta-xxxx \
+yocto/meta-xxxx/tplino-meta-vmware \
+
+To enable the vmware layer, add the vmware MACHINE to local.conf:
+
+MACHINE ?= "vmware"
+
+You should then be able to build a vmware image as such:
+
+  $ source oe-init-build-env
+  $ bitbake core-image-tplino
+
+At the end of a successful build, you should have an 
+virtual machine disk(vmdk) you can boot that as 
+hard disk from an virtual maschine. 

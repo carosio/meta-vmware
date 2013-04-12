@@ -1,0 +1,15 @@
+diff -Narup open-vm-tools-9.2.2-893683.orig/m4/vmtools.m4 open-vm-tools-9.2.2-893683/m4/vmtools.m4
+--- open-vm-tools-9.2.2-893683.orig/m4/vmtools.m4	2013-03-28 12:54:06.563908305 +0100
++++ open-vm-tools-9.2.2-893683/m4/vmtools.m4	2013-03-28 12:55:38.705410258 +0100
+@@ -279,9 +279,9 @@ AC_DEFUN([AC_VMW_LIB_ERROR],[
+ AC_DEFUN([AC_VMW_DEFAULT_FLAGS],[
+    if test -z "$CUSTOM_$1_CPPFLAGS"; then
+       if test "$os" = freebsd; then
+-         CUSTOM_$1_CPPFLAGS="-I/usr/local/include"
++         CUSTOM_$1_CPPFLAGS="-I$(includedir)"
+       else
+-         CUSTOM_$1_CPPFLAGS="-I/usr/include"
++         CUSTOM_$1_CPPFLAGS="-I$(includedir)"
+       fi
+       if test -n "$2"; then
+          CUSTOM_$1_CPPFLAGS="${CUSTOM_$1_CPPFLAGS}/$2"

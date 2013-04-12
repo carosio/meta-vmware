@@ -1,0 +1,303 @@
+Author: Nate Muench <NowIWillDestroyAbydos@gmail.com>
+Description: Replace deprecated glib declarations with the recommended ones.
+
+diff -Narup open-vm-tools-9.2.2-893683.orig/lib/glibUtils/fileLogger.c open-vm-tools/lib/glibUtils/fileLogger.c
+--- open-vm-tools-9.2.2-893683.orig/lib/glibUtils/fileLogger.c	2011-12-12 14:33:11.000000000 -0600
++++ open-vm-tools-9.2.2-893683/lib/glibUtils/fileLogger.c	2011-12-12 14:36:34.000000000 -0600
+@@ -43,7 +43,7 @@ typedef struct FileLogger {
+    guint          maxFiles;
+    gboolean       append;
+    gboolean       error;
+-   GStaticRWLock  lock;
++   GRWLock        rw_lock;
+ } FileLogger;
+ 
+ 
+@@ -254,7 +254,7 @@ FileLoggerLog(const gchar *domain,
+ {
+    FileLogger *logger = data;
+ 
+-   g_static_rw_lock_reader_lock(&logger->lock);
++   g_rw_lock_reader_lock(&logger->rw_lock);
+ 
+    if (logger->error) {
+       goto exit;
+@@ -265,13 +265,13 @@ FileLoggerLog(const gchar *domain,
+        * We need to drop the read lock and acquire a write lock to open
+        * the log file.
+        */
+-      g_static_rw_lock_reader_unlock(&logger->lock);
+-      g_static_rw_lock_writer_lock(&logger->lock);
++      g_rw_lock_reader_unlock(&logger->rw_lock);
++      g_rw_lock_writer_lock(&logger->rw_lock);
+       if (logger->file == NULL) {
+          logger->file = FileLoggerOpen(data);
+       }
+-      g_static_rw_lock_writer_unlock(&logger->lock);
+-      g_static_rw_lock_reader_lock(&logger->lock);
++      g_rw_lock_writer_unlock(&logger->rw_lock);
++      g_rw_lock_reader_lock(&logger->rw_lock);
+       if (logger->file == NULL) {
+          logger->error = TRUE;
+          goto exit;
+@@ -288,15 +288,15 @@ FileLoggerLog(const gchar *domain,
+ #endif
+          if (g_atomic_int_get(&logger->logSize) >= logger->maxSize) {
+             /* Drop the reader lock, grab the writer lock and re-check. */
+-            g_static_rw_lock_reader_unlock(&logger->lock);
+-            g_static_rw_lock_writer_lock(&logger->lock);
++            g_rw_lock_reader_unlock(&logger->rw_lock);
++            g_rw_lock_writer_lock(&logger->rw_lock);
+             if (g_atomic_int_get(&logger->logSize) >= logger->maxSize) {
+                fclose(logger->file);
+                logger->append = FALSE;
+                logger->file = FileLoggerOpen(logger);
+             }
+-            g_static_rw_lock_writer_unlock(&logger->lock);
+-            g_static_rw_lock_reader_lock(&logger->lock);
++            g_rw_lock_writer_unlock(&logger->rw_lock);
++            g_rw_lock_reader_lock(&logger->rw_lock);
+          } else {
+             fflush(logger->file);
+          }
+@@ -306,7 +306,7 @@ FileLoggerLog(const gchar *domain,
+    }
+ 
+ exit:
+-   g_static_rw_lock_reader_unlock(&logger->lock);
++   g_rw_lock_reader_unlock(&logger->rw_lock);
+ }
+ 
+ 
+@@ -328,7 +328,6 @@ FileLoggerDestroy(gpointer data)
+    if (logger->file != NULL) {
+       fclose(logger->file);
+    }
+-   g_static_rw_lock_free(&logger->lock);
+    g_free(logger->path);
+    g_free(logger);
+ }
+@@ -375,7 +374,7 @@ GlibUtils_CreateFileLogger(const char *p
+    data->append = append;
+    data->maxSize = maxSize * 1024 * 1024;
+    data->maxFiles = maxFiles + 1; /* To account for the active log file. */
+-   g_static_rw_lock_init(&data->lock);
++   g_rw_lock_init(&data->rw_lock);
+ 
+    return &data->handler;
+ }
+diff -Narup open-vm-tools-9.2.2-893683.orig/lib/rpcChannel/bdoorChannel.c open-vm-tools/lib/rpcChannel/bdoorChannel.c
+--- open-vm-tools-9.2.2-893683.orig/lib/rpcChannel/bdoorChannel.c	2011-12-12 14:33:11.000000000 -0600
++++ open-vm-tools-9.2.2-893683/lib/rpcChannel/bdoorChannel.c	2011-12-12 15:14:52.178079822 -0600
+@@ -34,7 +34,7 @@
+ 
+ typedef struct BackdoorChannel {
+    GMainContext  *mainCtx;
+-   GStaticMutex   outLock;
++   GMutex        outLock;
+    RpcIn         *in;
+    RpcOut        *out;
+    gboolean       inStarted;
+@@ -119,7 +119,7 @@ RpcInStop(RpcChannel *chan)
+ {
+    BackdoorChannel *bdoor = chan->_private;
+ 
+-   g_static_mutex_lock(&bdoor->outLock);
++   g_mutex_lock(&bdoor->outLock);
+    if (bdoor->out != NULL) {
+       if (bdoor->outStarted) {
+          RpcOut_stop(bdoor->out);
+@@ -128,7 +128,7 @@ RpcInStop(RpcChannel *chan)
+    } else {
+       ASSERT(!bdoor->outStarted);
+    }
+-   g_static_mutex_unlock(&bdoor->outLock);
++   g_mutex_unlock(&bdoor->outLock);
+ 
+    if (bdoor->in != NULL) {
+       if (bdoor->inStarted) {
+@@ -158,7 +158,6 @@ RpcInShutdown(RpcChannel *chan)
+       RpcIn_Destruct(bdoor->in);
+    }
+    RpcOut_Destruct(bdoor->out);
+-   g_static_mutex_free(&bdoor->outLock);
+    if (bdoor->mainCtx != NULL) {
+       g_main_context_unref(bdoor->mainCtx);
+    }
+@@ -190,7 +189,7 @@ RpcInSend(RpcChannel *chan,
+    size_t replyLen;
+    BackdoorChannel *bdoor = chan->_private;
+ 
+-   g_static_mutex_lock(&bdoor->outLock);
++   g_mutex_lock(&bdoor->outLock);
+    if (!bdoor->outStarted) {
+       goto exit;
+    }
+@@ -248,7 +247,7 @@ RpcInSend(RpcChannel *chan,
+    }
+ 
+ exit:
+-   g_static_mutex_unlock(&bdoor->outLock);
++   g_mutex_unlock(&bdoor->outLock);
+    return ret;
+ }
+ 
+@@ -268,7 +267,7 @@ BackdoorChannel_New(void)
+    ret = RpcChannel_Create();
+    bdoor = g_malloc0(sizeof *bdoor);
+ 
+-   g_static_mutex_init(&bdoor->outLock);
++   g_mutex_init(&bdoor->outLock);
+    bdoor->out = RpcOut_Construct();
+    ASSERT(bdoor->out != NULL);
+ 
+diff -Narup open-vm-tools-9.2.2-893683.orig/libvmtools/i18n.c open-vm-tools/libvmtools/i18n.c
+--- open-vm-tools-9.2.2-893683.orig/libvmtools/i18n.c	2011-12-12 15:16:17.000000000 -0600
++++ open-vm-tools-9.2.2-893683/libvmtools/i18n.c	2011-12-12 15:39:10.840916336 -0600
+@@ -54,7 +54,7 @@ typedef struct MsgCatalog {
+ 
+ typedef struct MsgState {
+    HashTable     *domains; /* List of text domains. */
+-   GStaticMutex   lock;    /* Mutex to protect shared state. */
++   GMutex   lock;    /* Mutex to protect shared state. */
+ } MsgState;
+ 
+ 
+@@ -132,7 +132,7 @@ MsgInitState(gpointer unused)
+ {
+    ASSERT(gMsgState == NULL);
+    gMsgState = g_new0(MsgState, 1);
+-   g_static_mutex_init(&gMsgState->lock);
++   g_mutex_init(&gMsgState->lock);
+    return NULL;
+ }
+ 
+@@ -343,7 +343,7 @@ MsgGetString(const char *domain,
+     * This lock is pretty coarse-grained, but a lot of the code below just runs
+     * in exceptional situations, so it should be OK.
+     */
+-   g_static_mutex_lock(&state->lock);
++   g_mutex_lock(&state->lock);
+ 
+    catalog = MsgGetCatalog(domain);
+    if (catalog != NULL) {
+@@ -414,7 +414,7 @@ MsgGetString(const char *domain,
+       }
+    }
+ 
+-   g_static_mutex_unlock(&state->lock);
++   g_mutex_unlock(&state->lock);
+ 
+    return strp;
+ }
+@@ -681,7 +681,7 @@ VMToolsMsgCleanup(void)
+       if (gMsgState->domains != NULL) {
+          HashTable_Free(gMsgState->domains);
+       }
+-      g_static_mutex_free(&gMsgState->lock);
++      g_mutex_init(&gMsgState->lock);
+       g_free(gMsgState);
+    }
+ }
+@@ -775,9 +775,9 @@ VMTools_BindTextDomain(const char *domai
+                    "catalog dir '%s'.\n", domain, lang, catdir);
+       }
+    } else {
+-      g_static_mutex_lock(&state->lock);
++      g_mutex_lock(&state->lock);
+       MsgSetCatalog(domain, catalog);
+-      g_static_mutex_unlock(&state->lock);
++      g_mutex_unlock(&state->lock);
+    }
+    g_free(file);
+    free(dfltdir);
+diff -Narup open-vm-tools-9.2.2-893683.orig/libvmtools/vmxLogger.c open-vm-tools/libvmtools/vmxLogger.c
+--- open-vm-tools-9.2.2-893683.orig/libvmtools/vmxLogger.c	2011-12-12 15:16:17.000000000 -0600
++++ open-vm-tools-9.2.2-893683/libvmtools/vmxLogger.c	2011-12-12 15:46:21.552867936 -0600
+@@ -27,7 +27,7 @@
+ 
+ typedef struct VMXLoggerData {
+    GlibLogger     handler;
+-   GStaticMutex   lock;
++   GMutex         lock;
+    RpcChannel    *chan;
+ } VMXLoggerData;
+ 
+@@ -60,7 +60,7 @@ VMXLoggerLog(const gchar *domain,
+ {
+    VMXLoggerData *logger = data;
+ 
+-   g_static_mutex_lock(&logger->lock);
++   g_mutex_lock(&logger->lock);
+    if (RpcChannel_Start(logger->chan)) {
+       gchar *msg;
+       gint cnt = VMToolsAsprintf(&msg, "log %s", message);
+@@ -75,7 +75,7 @@ VMXLoggerLog(const gchar *domain,
+       g_free(msg);
+       RpcChannel_Stop(logger->chan);
+    }
+-   g_static_mutex_unlock(&logger->lock);
++   g_mutex_unlock(&logger->lock);
+ }
+ 
+ 
+@@ -95,7 +95,7 @@ VMXLoggerDestroy(gpointer data)
+ {
+    VMXLoggerData *logger = data;
+    RpcChannel_Destroy(logger->chan);
+-   g_static_mutex_free(&logger->lock);
++   g_mutex_init(&logger->lock);
+    g_free(logger);
+ }
+ 
+@@ -119,7 +119,7 @@ VMToolsCreateVMXLogger(void)
+    data->handler.addsTimestamp = TRUE;
+    data->handler.shared = TRUE;
+    data->handler.dtor = VMXLoggerDestroy;
+-   g_static_mutex_init(&data->lock);
++   g_mutex_init(&data->lock);
+    data->chan = BackdoorChannel_New();
+    return &data->handler;
+ }
+diff -Narup open-vm-tools-9.2.2-893683.orig/services/vmtoolsd/serviceObj.c open-vm-tools/services/vmtoolsd/serviceObj.c
+--- open-vm-tools-9.2.2-893683.orig/services/vmtoolsd/serviceObj.c	2011-12-13 13:10:25.000000000 -0600
++++ open-vm-tools-9.2.2-893683/services/vmtoolsd/serviceObj.c	2011-12-13 13:24:01.545256019 -0600
+@@ -260,7 +260,7 @@ ToolsCoreServiceCtor(GType type,
+                                                                       params);
+ 
+    self = TOOLSCORE_SERVICE(object);
+-   self->lock = g_mutex_new();
++   g_mutex_init(self->lock);
+    self->props = g_array_new(FALSE, FALSE, sizeof (ServiceProperty));
+ 
+    return object;
+@@ -296,7 +296,7 @@ ToolsCoreServiceDtor(GObject *object)
+    }
+ 
+    g_array_free(self->props, TRUE);
+-   g_mutex_free(self->lock);
++   g_mutex_init(self->lock);
+ }
+ 
+ 
+diff -Narup open-vm-tools-9.2.2-893683.orig/services/vmtoolsd/threadPool.c open-vm-tools/services/vmtoolsd/threadPool.c
+--- open-vm-tools-9.2.2-893683.orig/services/vmtoolsd/threadPool.c	2011-12-13 13:10:25.000000000 -0600
++++ open-vm-tools-9.2.2-893683/services/vmtoolsd/threadPool.c	2011-12-13 13:42:01.834280449 -0600
+@@ -526,7 +526,7 @@ ToolsCorePool_Init(ToolsAppCtx *ctx)
+    }
+ 
+    gState.active = TRUE;
+-   gState.lock = g_mutex_new();
++   g_mutex_init(gState.lock);
+    gState.threads = g_ptr_array_new();
+    gState.workQueue = g_queue_new();
+ 
+@@ -589,7 +589,7 @@ ToolsCorePool_Shutdown(ToolsAppCtx *ctx)
+    /* Cleanup. */
+    g_ptr_array_free(gState.threads, TRUE);
+    g_queue_free(gState.workQueue);
+-   g_mutex_free(gState.lock);
++   g_mutex_init(gState.lock);
+    memset(&gState, 0, sizeof gState);
+    g_object_set(ctx->serviceObj, TOOLS_CORE_PROP_TPOOL, NULL, NULL);
+ }
