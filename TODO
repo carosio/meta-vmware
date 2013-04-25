@@ -3,14 +3,8 @@ This TODO file of tplino-meta-vmware layer
 TODO
 ====
 
-- stabel build process with vmware as machine 
-  -> priority: HIGH 
-
 - adaptation the feature of open-vmware-tools  on DISRO_FEATURE
   -> priority: NORMAL 
 
 - added repices of depends from open-vmware-tools 
   -> priority: NORMAL
-
-- added OVF creator 
-  -> prority: NORMAL

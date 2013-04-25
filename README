@@ -6,7 +6,7 @@ Dependencies
 ============
 
 This layer depends on:
-  
+
   URI: git://github.com/carosio/meta-caros
   branch: master
 
@@ -15,21 +15,21 @@ Patches
 =======
 
 Please submit any patches against this BSP to Travelping (info@travelping.com)
- 
+
 
 Table of Contents
 =================
 
 I. Building the meta-vmware BSP layer
-
+II. OVF Profiling
 
 I. Building the meta-vmware SP layer
 =======================================
 
 In order to build an image with BSP support for a given release, you
-need to clone the tplino-core repository. 
+need to clone the tplino-core repository.
 
-Having done that, and assuming you placed the folder 
+Having done that, and assuming you placed the folder
 at the top-level of your yocto build tree, you can build a
 vmware image by adding the location of the tplino-meta-vmware
 layer to bblayers.conf, along with any other layers needed (to access
@@ -47,6 +47,29 @@ You should then be able to build a vmware image as such:
   $ source oe-init-build-env
   $ bitbake core-image-tplino
 
-At the end of a successful build, you should have an 
-virtual machine disk(vmdk) you can boot that as 
-hard disk from an virtual maschine. 
+At the end of a successful build, you should have an
+virtual machine disk(vmdk) you can boot that as
+hard disk from an virtual maschine.
+
+II. OVF Profiling
+=====================
+
+This release adds OVF profiling support to build vAPPs.
+
+To add OVF support to a new image
+* register with VMware and download VMware-vix-disklib-1.2.0-230216.x86_64.tar.gz
+from https://my.vmware.com/group/vmware/get-download?downloadGroup=VDDK-1-2 into
+the recipes-vmware/vmware-disklib/files directory
+* add the following line to your image recipe:
+
+  require recipes-vmware/ovf/vmware-ovf.inc
+
+The OVF task checks if the target MACHINE type is "vmware", so no
+unneeded functionality is added, if the image is built for a different target.
+
+Use the following parameters for customization in local.conf
+
+  * CORE_NUMBER    - # of Core(s) per VM         [default: 1]
+  * RAM_SIZE       - VM's RAM in MB              [default: 512]
+  * DISK_SIZE_DATA - Data partition's size in MB [default: 6144]
+
