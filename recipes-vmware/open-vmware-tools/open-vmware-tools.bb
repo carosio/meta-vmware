@@ -19,8 +19,7 @@ RDEPENDS_${PN}_append = " util-linux gcc "
 
 inherit autotools systemd
 
-SYSTEMD_PACKAGES = "${PN}-systemd"
-SYSTEMD_SERVICE_${PN}-systemd = "vmtoolsd.service"
+SYSTEMD_SERVICE_${PN} = "vmtoolsd.service"
 
 EXTRA_OECONF = "--without-procps --disable-multimon --disable-docs disable-tests \
 		--without-gtk2 --without-gtkmm --without-icu "
@@ -35,3 +34,9 @@ FILES_${PN} += " /lib/modules/*/kernel/ \
 		/usr/share/open-vm-tools/ \
 		/usr/lib/open-vm-tools/plugins/vmsvc/lib* \
 		/usr/lib/open-vm-tools/plugins/common/lib* "
+
+do_install_append() {
+    install -d ${D}${systemd_unitdir}/system
+
+    install -m 644 ${WORKDIR}/*.service ${D}/${systemd_unitdir}/system
+}
