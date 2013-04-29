@@ -89,6 +89,15 @@
         <rasd:ResourceType>17</rasd:ResourceType>
         <vmw:Config ovf:required="false" vmw:key="backing.writeThrough" vmw:value="false" />
       </Item>
+      <Item>
+        <rasd:AddressOnParent>1</rasd:AddressOnParent>
+        <rasd:ElementName>Hard Disk 2</rasd:ElementName>
+        <rasd:HostResource>ovf:/disk/vmdisk2</rasd:HostResource>
+        <rasd:InstanceID>10</rasd:InstanceID>
+        <rasd:Parent>4</rasd:Parent>
+        <rasd:ResourceType>17</rasd:ResourceType>
+        <vmw:Config ovf:required="false" vmw:key="backing.writeThrough" vmw:value="false" />
+      </Item>
       <Item ovf:required="false">
         <rasd:AddressOnParent>0</rasd:AddressOnParent>
         <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
