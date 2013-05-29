@@ -12,6 +12,7 @@ python __anonymous() {
         if not d.getVar("DISK_SIZE_DATA"):
             d.setVar("DISK_SIZE_DATA", "6144")
         d.setVar("VM_IMAGE_NAME", "${IMAGE_BASENAME}-${MACHINE}")
+        d.setVar("VM_IMAGE_NAME_VER", "${IMAGE_BASENAME}-${DISTRO_VERSION}-${MACHINE}")
 	root_size = d.getVar("DISK_SIZE_ROOT")
 	if root_size:
 	    root_size = int(root_size) * 1024
@@ -36,14 +37,14 @@ create_bundle_files () {
         echo "************"
         echo Converting ROOT partition
         echo Source Image: ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.vmdk
-        echo Target Image: ${WORKDIR}/vmware-image/${VM_IMAGE_NAME}.vmdk
+        echo Target Image: ${WORKDIR}/vmware-image/${VM_IMAGE_NAME_VER}.vmdk
         echo "************"
-        vmware-vdiskmanager -r ${VM_IMAGE_NAME}.vmdk -t 5 ${WORKDIR}/vmware-image/${VM_IMAGE_NAME}.vmdk
+        vmware-vdiskmanager -r ${VM_IMAGE_NAME}.vmdk -t 5 ${WORKDIR}/vmware-image/${VM_IMAGE_NAME_VER}.vmdk
 
         cd ${WORKDIR}
 
         # set size parameter of vmdk
-        VMDK_SIZE_ROOT=`du -b vmware-image/${VM_IMAGE_NAME}.vmdk | awk '{ print $1 }'`
+        VMDK_SIZE_ROOT=`du -b vmware-image/${VM_IMAGE_NAME_VER}.vmdk | awk '{ print $1 }'`
 
         # set size parameter of real file space in byte
 	# if the size of the root file system is set, use that,
@@ -62,43 +63,43 @@ create_bundle_files () {
         #
 
         # disk names
-        sed s/disk_name_root/${VM_IMAGE_NAME}/g  ${OVFFILES}/ovf-dummy > vmware-image/${VM_IMAGE_NAME}.ovf
+        sed s/disk_name_root/${VM_IMAGE_NAME_VER}/g  ${OVFFILES}/ovf-dummy > vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         # vmdk disk sizes
-        sed s/vmdk_size_root/${VMDK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
+        sed s/vmdk_size_root/${VMDK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         # disk sizes
-        sed s/disk_size_root/${REAL_DISK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
-        sed s/disk_size_data/${REAL_DISK_SIZE_DATA}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
+        sed s/disk_size_root/${REAL_DISK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
+        sed s/disk_size_data/${REAL_DISK_SIZE_DATA}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         # distro name
-        sed s/distro_name/${DISTRO_NAME}_vAPP/g -i vmware-image/${VM_IMAGE_NAME}.ovf
+        sed s/distro_name/${DISTRO_NAME}_vAPP/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         # hardware specs
-        sed s/core_number/${CORE_NUMBER}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
-        sed s/ram_size/${RAM_SIZE}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
+        sed s/core_number/${CORE_NUMBER}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
+        sed s/ram_size/${RAM_SIZE}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         #
         # replace parameters in mf-file
         #
 
         # create sha1Key of vAPP arts
-        SHA1KEY_VMDK_ROOT=`sha1sum vmware-image/${VM_IMAGE_NAME}.vmdk | awk '{print $1}'`
-        SHA1KEY_OVF=`sha1sum vmware-image/${VM_IMAGE_NAME}.ovf | awk '{print $1}'`
+        SHA1KEY_VMDK_ROOT=`sha1sum vmware-image/${VM_IMAGE_NAME_VER}.vmdk | awk '{print $1}'`
+        SHA1KEY_OVF=`sha1sum vmware-image/${VM_IMAGE_NAME_VER}.ovf | awk '{print $1}'`
 
         # set filenames
-        sed s/image_name_root/${VM_IMAGE_NAME}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME}.mf
-        sed s/image_name/${VM_IMAGE_NAME}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME}.mf
+        sed s/image_name_root/${VM_IMAGE_NAME_VER}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME_VER}.mf
+        sed s/image_name/${VM_IMAGE_NAME_VER}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME_VER}.mf
 
         # set keys
-        sed s/sha1Key_VMDK_ROOT/${SHA1KEY_VMDK_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.mf
-        sed s/sha1Key_OVF/${SHA1KEY_OVF}/g -i vmware-image/${VM_IMAGE_NAME}.mf
+        sed s/sha1Key_VMDK_ROOT/${SHA1KEY_VMDK_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.mf
+        sed s/sha1Key_OVF/${SHA1KEY_OVF}/g -i vmware-image/${VM_IMAGE_NAME_VER}.mf
 
         # zip files
-        zip -r ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}-OVF-DEPLOY vmware-image
+        zip -r ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}-OVF-DEPLOY vmware-image
         
         # ova file 
-        ovftool vmware-image/${VM_IMAGE_NAME}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.ova
+        ovftool vmware-image/${VM_IMAGE_NAME_VER}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}.ova
 
         # delete folder to free space
         rm -rf vmware-image
