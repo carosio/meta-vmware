@@ -12,7 +12,7 @@
   <NetworkSection>
     <Info>The list of logical networks</Info>
      <Network ovf:name="ALL VLANs">
-       <Description>The ALL VLANs network</Description>
+       <Description>The ALL VLANs network</Description>        
      </Network>
   </NetworkSection>
   <VirtualSystem ovf:id="distro_name">
@@ -111,9 +111,9 @@
       </Item>
       <Item>
         <rasd:AddressOnParent>7</rasd:AddressOnParent>
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
+        <rasd:AutomaticAllocation>true</rasd:AutomaticAllocation>
         <rasd:Connection>ALL VLANs</rasd:Connection>
-        <rasd:Description>E1000 ethernet adapter on "ALL VLANs"</rasd:Description>
+        <rasd:Description>E1000 ethernet adapter on "All VLANs"</rasd:Description>
         <rasd:ElementName>Ethernet 1</rasd:ElementName>
         <rasd:InstanceID>9</rasd:InstanceID>
         <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
@@ -121,7 +121,33 @@
         <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true" />
         <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="32" />
         <vmw:Config ovf:required="false" vmw:key="wakeOnLanEnabled" vmw:value="true" />
-      </Item>
+       </Item>
+       <Item>
+        <rasd:AddressOnParent>8</rasd:AddressOnParent>
+        <rasd:AutomaticAllocation>true</rasd:AutomaticAllocation>
+        <rasd:Connection>ALL VLANs</rasd:Connection>
+        <rasd:Description>E1000 ethernet adapter on "ALL VLANs"</rasd:Description>
+        <rasd:ElementName>Ethernet 2</rasd:ElementName>
+        <rasd:InstanceID>11</rasd:InstanceID>
+        <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
+        <rasd:ResourceType>10</rasd:ResourceType>
+        <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true" />
+        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="34" />
+        <vmw:Config ovf:required="false" vmw:key="wakeOnLanEnabled" vmw:value="true" />
+       </Item>
+       <Item>
+        <rasd:AddressOnParent>9</rasd:AddressOnParent>
+        <rasd:AutomaticAllocation>true</rasd:AutomaticAllocation>
+        <rasd:Connection>ALL VLANs</rasd:Connection>
+        <rasd:Description>E1000 ethernet adapter on "ALL VLANs"</rasd:Description>
+        <rasd:ElementName>Ethernet 3</rasd:ElementName>     
+        <rasd:InstanceID>12</rasd:InstanceID>
+        <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
+        <rasd:ResourceType>10</rasd:ResourceType>
+        <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true" />
+        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="35" />
+        <vmw:Config ovf:required="false" vmw:key="wakeOnLanEnabled" vmw:value="true" />
+       </Item>
       <vmw:Config ovf:required="false" vmw:key="cpuHotAddEnabled" vmw:value="false" />
       <vmw:Config ovf:required="false" vmw:key="cpuHotRemoveEnabled" vmw:value="false" />
       <vmw:Config ovf:required="false" vmw:key="firmware" vmw:value="bios" />

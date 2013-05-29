@@ -1,7 +1,6 @@
 #
 # Copyright (C) 2013 Travelping GmbH
 #
-
 python __anonymous() {
     # Set OVF variables only if target is "vmware"
     if base_contains("MACHINE", "vmware", "1", "", d) == "1":
@@ -61,7 +60,7 @@ create_bundle_files () {
         #
         # replace parameters in OVF profile
         #
-        
+
         # disk names
         sed s/disk_name_root/${VM_IMAGE_NAME}/g  ${OVFFILES}/ovf-dummy > vmware-image/${VM_IMAGE_NAME}.ovf
 
@@ -90,14 +89,14 @@ create_bundle_files () {
         # set filenames
         sed s/image_name_root/${VM_IMAGE_NAME}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME}.mf
         sed s/image_name/${VM_IMAGE_NAME}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME}.mf
-                          
+
         # set keys
-        sed s/sha1Key_VMDK_ROOT/${SHA1KEY_VMDK_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.mf 
+        sed s/sha1Key_VMDK_ROOT/${SHA1KEY_VMDK_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.mf
         sed s/sha1Key_OVF/${SHA1KEY_OVF}/g -i vmware-image/${VM_IMAGE_NAME}.mf
 
         # zip files
         zip -r ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}-OVF-DEPLOY vmware-image
-
+        
         # ova file 
         ovftool vmware-image/${VM_IMAGE_NAME}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.ova
 

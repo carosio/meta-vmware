@@ -19,4 +19,5 @@ KERNEL_FEATURES_append_vmware += " cfg/smp.scc"
 SRCREV_machine_vmware ?= "AUTOINC"
 SRCREV_meta_vmware ?= "AUTOINC"
 
-SRC_URI = "git://git@git.tpip.net/tplino-linux-3.8;protocol=ssh;bareclone=1;branch=${KBRANCH},meta;name=machine,meta"
+SRC_URI = "git:///usr/src/disk/aschultz/kernel-work/tplino-linux-3.8-bare;bareclone=1;branch=${KBRANCH},meta;name=machine,meta"
+
