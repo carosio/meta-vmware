@@ -72,4 +72,9 @@ Use the following parameters for customization in local.conf
   * CORE_NUMBER    - # of Core(s) per VM         [default: 1]
   * RAM_SIZE       - VM's RAM in MB              [default: 512]
   * DISK_SIZE_DATA - Data partition's size in MB [default: 6144]
+  * DISK_SIZE_ROOT - Root partition's size in MB [default: 64]¹
 
+¹ While the default size of the root partition is set to 64 MB, it is actually,
+  when not explicitly set, calculated by multiplying the space used by the actual
+  root file system with IMAGE_OVERHEAD_FACTOR (default: 1.3) and adding
+  IMAGE_ROOTFS_EXTRA_SPACE (default: 0) and then doing some rounding.

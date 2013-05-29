@@ -13,6 +13,10 @@ python __anonymous() {
         if not d.getVar("DISK_SIZE_DATA"):
             d.setVar("DISK_SIZE_DATA", "6144")
         d.setVar("VM_IMAGE_NAME", "${IMAGE_BASENAME}-${MACHINE}")
+	root_size = d.getVar("DISK_SIZE_ROOT")
+	if root_size:
+	    root_size = int(root_size) * 1024
+	    d.setVar("IMAGE_ROOTFS_SIZE", str(root_size))
 }
 
 create_bundle_files () {
@@ -43,7 +47,15 @@ create_bundle_files () {
         VMDK_SIZE_ROOT=`du -b vmware-image/${VM_IMAGE_NAME}.vmdk | awk '{ print $1 }'`
 
         # set size parameter of real file space in byte
-        DISK_SIZE_ROOT=`du -Lb ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.hdddirect | awk '{ print $1 }'`
+	# if the size of the root file system is set, use that,
+	# else use actual size of file
+	if [ -n "${DISK_SIZE_ROOT}" ]
+	then
+            REAL_DISK_SIZE_ROOT=`expr ${IMAGE_ROOTFS_SIZE} \* 1024 \* 105 \/ 100`
+	else
+            REAL_DISK_SIZE_ROOT=`du -Lb ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.hdddirect | awk '{ print $1 }'`
+	fi
+
         REAL_DISK_SIZE_DATA=`expr ${DISK_SIZE_DATA} \* 1024 \* 1024`
 
         #
@@ -57,7 +69,7 @@ create_bundle_files () {
         sed s/vmdk_size_root/${VMDK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
 
         # disk sizes
-        sed s/disk_size_root/${DISK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
+        sed s/disk_size_root/${REAL_DISK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
         sed s/disk_size_data/${REAL_DISK_SIZE_DATA}/g -i vmware-image/${VM_IMAGE_NAME}.ovf
 
         # distro name
@@ -88,7 +100,7 @@ create_bundle_files () {
 
         # ova file 
         ovftool vmware-image/${VM_IMAGE_NAME}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.ova
-                
+
         # delete folder to free space
         rm -rf vmware-image
     fi
