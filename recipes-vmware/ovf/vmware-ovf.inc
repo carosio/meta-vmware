@@ -47,14 +47,14 @@ create_bundle_files () {
         VMDK_SIZE_ROOT=`du -b vmware-image/${VM_IMAGE_NAME_VER}.vmdk | awk '{ print $1 }'`
 
         # set size parameter of real file space in byte
-	# if the size of the root file system is set, use that,
-	# else use actual size of file
-	if [ -n "${DISK_SIZE_ROOT}" ]
-	then
+      	# if the size of the root file system is set, use that,
+	      # else use actual size of file
+      	if [ -n "${DISK_SIZE_ROOT}" ]
+	       then
             REAL_DISK_SIZE_ROOT=`expr ${IMAGE_ROOTFS_SIZE} \* 1024 \* 105 \/ 100`
-	else
+	       else
             REAL_DISK_SIZE_ROOT=`du -Lb ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.hdddirect | awk '{ print $1 }'`
-	fi
+	      fi
 
         REAL_DISK_SIZE_DATA=`expr ${DISK_SIZE_DATA} \* 1024 \* 1024`
 
