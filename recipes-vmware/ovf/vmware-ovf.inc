@@ -99,7 +99,7 @@ create_bundle_files () {
         zip -r ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}-OVF-DEPLOY vmware-image
         
         # ova file 
-        ovftool vmware-image/${VM_IMAGE_NAME_VER}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}.ova
+        ovftool -o vmware-image/${VM_IMAGE_NAME_VER}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}.ova
 
         # delete folder to free space
         rm -rf vmware-image
