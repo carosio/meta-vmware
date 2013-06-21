@@ -5,38 +5,52 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
 PR = "r11"
 
-SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.2-893683.tar.gz \
+SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.3-1031360.tar.gz \
    file://path_vmtools.patch;apply=yes \
+   file://fix_kernel_include_patch.patch;apply=yes \
    file://vmtoolsd.service"
 
-SRC_URI[md5sum] = "7af505681d736d4c9ee6493b1166689f"
-SRC_URI[sha256sum] = "1ae795e75bf4b38185f39083b8075686d3bab4c1222f4e39c863aeccb2f5f387"
+SRC_URI[md5sum] = "71a1d8065b632692af2cdcc9d82f305e"
+SRC_URI[sha256sum] = "1a004ea1675101fd44cddda299e2e9ac254388769b69f41b7ff5d1797549c8f1"
 
-S = "${WORKDIR}/open-vm-tools-9.2.2-893683"
+S = "${WORKDIR}/open-vm-tools-9.2.3-1031360"
 
-DEPENDS_append = " glib-2.0 util-linux gcc " 
-RDEPENDS_${PN}_append = " util-linux gcc " 
+DEPENDS = "virtual/kernel glib-2.0 util-linux gcc "
+RDEPENDS_${PN} = "util-linux"
 
-inherit autotools systemd
+inherit module-base kernel-module-split autotools systemd
+
+# from module.bbclass...
+addtask make_scripts after do_patch before do_compile
+do_make_scripts[lockfiles] = "${TMPDIR}/kernel-scripts.lock"
+do_make_scripts[deptask] = "do_populate_sysroot"
+
+# add all splitted modules to PN RDEPENDS, PN can be empty now
+KERNEL_MODULES_META_PACKAGE = "${PN}"
+#
 
 SYSTEMD_SERVICE_${PN} = "vmtoolsd.service"
 
 EXTRA_OECONF = "--without-procps --disable-multimon --disable-docs disable-tests \
-		--without-gtk2 --without-gtkmm --without-icu "
+		--without-gtk2 --without-gtkmm --without-icu \
+		--with-linuxdir=${STAGING_KERNEL_DIR} "
 
 EXTRA_OECONF += "${@base_contains('DISTRO_FEATURES', 'pam', '', '--without-pam', d)} \
                  ${@base_contains('DISTRO_FEATURES', 'x11', '', '--without-x', d)} \
                  ${@base_contains('DISTRO_FEATURES', 'dnet', '', '--without-dnet', d)}"
 
+EXTRA_OEMAKE = "MODULES_DIR=/lib/modules/${KERNEL_VERSION}/kernel"
+
 CFLAGS += '-Wno-error=deprecated-declarations'
 
-FILES_${PN} += " /lib/modules/*/kernel/ \
-		/usr/share/open-vm-tools/ \
-		/usr/lib/open-vm-tools/plugins/vmsvc/lib* \
-		/usr/lib/open-vm-tools/plugins/common/lib* "
+FILES_${PN} += "/usr/lib/open-vm-tools/plugins/vmsvc/lib*.so \
+		/usr/lib/open-vm-tools/plugins/common/lib*.so"
+FILES_${PN}-locale += "/usr/share/open-vm-tools/messages"
+FILES_${PN}-dev += "/usr/lib/open-vm-tools/plugins/common/lib*.la"
+FILES_${PN}-dbg += "/usr/lib/open-vm-tools/plugins/common/.debug \
+		    /usr/lib/open-vm-tools/plugins/vmsvc/.debug"
 
 do_install_append() {
     install -d ${D}${systemd_unitdir}/system
-
     install -m 644 ${WORKDIR}/*.service ${D}/${systemd_unitdir}/system
 }

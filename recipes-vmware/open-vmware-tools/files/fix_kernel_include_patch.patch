@@ -1,0 +1,12 @@
+diff -up open-vm-tools-9.2.2-893683/configure.ac.orig open-vm-tools-9.2.2-893683/configure.ac
+--- open-vm-tools-9.2.2-893683/configure.ac.orig	2013-06-12 22:39:36.380020420 +0200
++++ open-vm-tools-9.2.2-893683/configure.ac	2013-06-12 22:40:37.336022370 +0200
+@@ -148,7 +148,7 @@ if test "$with_kernel_modules" = "yes";
+          if test ! -d "$LINUXDIR/kernel/"; then
+              AC_MSG_ERROR([$LINUXDIR/kernel does not exist])
+          fi
+-         LINUXINCLUDE="$LINUXDIR/build/include"
++         LINUXINCLUDE="$LINUXDIR/include"
+          if test ! -d "$LINUXINCLUDE"; then
+             AC_MSG_ERROR([Can't find include dir under $LINUXDIR])
+          fi
