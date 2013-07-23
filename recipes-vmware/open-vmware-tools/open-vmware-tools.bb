@@ -8,6 +8,7 @@ PR = "r11"
 SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.3-1031360.tar.gz \
    file://path_vmtools.patch;apply=yes \
    file://fix_kernel_include_patch.patch;apply=yes \
+   file://tools.conf \ 
    file://vmtoolsd.service"
 
 SRC_URI[md5sum] = "71a1d8065b632692af2cdcc9d82f305e"
@@ -44,13 +45,15 @@ EXTRA_OEMAKE = "MODULES_DIR=/lib/modules/${KERNEL_VERSION}/kernel"
 CFLAGS += '-Wno-error=deprecated-declarations'
 
 FILES_${PN} += "/usr/lib/open-vm-tools/plugins/vmsvc/lib*.so \
-		/usr/lib/open-vm-tools/plugins/common/lib*.so"
+		/usr/lib/open-vm-tools/plugins/common/lib*.so \
+    ${sysconfdir}/vmware-tools/tools.conf"
 FILES_${PN}-locale += "/usr/share/open-vm-tools/messages"
 FILES_${PN}-dev += "/usr/lib/open-vm-tools/plugins/common/lib*.la"
 FILES_${PN}-dbg += "/usr/lib/open-vm-tools/plugins/common/.debug \
 		    /usr/lib/open-vm-tools/plugins/vmsvc/.debug"
 
 do_install_append() {
-    install -d ${D}${systemd_unitdir}/system
-    install -m 644 ${WORKDIR}/*.service ${D}/${systemd_unitdir}/system
+    install -d ${D}${systemd_unitdir}/system ${D}${sysconfdir}/vmware-tools
+    install -m 644 ${WORKDIR}/*.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/tools.conf ${D}${sysconfdir}/vmware-tools/tools.conf
 }
