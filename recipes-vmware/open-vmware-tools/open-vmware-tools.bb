@@ -9,6 +9,7 @@ SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/
    file://path_vmtools.patch;apply=yes \
    file://fix_kernel_include_patch.patch;apply=yes \
    file://tools.conf \ 
+   file://fix_distrofile.patch;apply=yes \
    file://vmtoolsd.service"
 
 SRC_URI[md5sum] = "71a1d8065b632692af2cdcc9d82f305e"
