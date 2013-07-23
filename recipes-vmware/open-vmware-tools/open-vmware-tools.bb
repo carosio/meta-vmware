@@ -3,7 +3,7 @@ SECTION = "vmware-tools"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
-PR = "r11"
+PR = "r12"
 
 SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.3-1031360.tar.gz \
    file://path_vmtools.patch;apply=yes \
@@ -16,8 +16,8 @@ SRC_URI[sha256sum] = "1a004ea1675101fd44cddda299e2e9ac254388769b69f41b7ff5d17975
 
 S = "${WORKDIR}/open-vm-tools-9.2.3-1031360"
 
-DEPENDS = "virtual/kernel glib-2.0 util-linux gcc "
-RDEPENDS_${PN} = "util-linux"
+DEPENDS = "virtual/kernel glib-2.0 util-linux gcc libdnet "
+RDEPENDS_${PN} = "util-linux libdnet"
 
 inherit module-base kernel-module-split autotools systemd
 
@@ -37,8 +37,7 @@ EXTRA_OECONF = "--without-procps --disable-multimon --disable-docs disable-tests
 		--with-linuxdir=${STAGING_KERNEL_DIR} "
 
 EXTRA_OECONF += "${@base_contains('DISTRO_FEATURES', 'pam', '', '--without-pam', d)} \
-                 ${@base_contains('DISTRO_FEATURES', 'x11', '', '--without-x', d)} \
-                 ${@base_contains('DISTRO_FEATURES', 'dnet', '', '--without-dnet', d)}"
+                 ${@base_contains('DISTRO_FEATURES', 'x11', '', '--without-x', d)}"
 
 EXTRA_OEMAKE = "MODULES_DIR=/lib/modules/${KERNEL_VERSION}/kernel"
 
