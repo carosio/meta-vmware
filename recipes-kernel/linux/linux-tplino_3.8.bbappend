@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR := "${PR}.5"
+PR := "${PR}.6"
 
 COMPATIBLE_MACHINE_vmware = "vmware"
 
@@ -10,5 +10,5 @@ KARCH_vmware  = "x86_64"
 
 KERNEL_FEATURES_append_vmware += " cfg/smp.scc features/veth/veth.scc"
 
-SRCREV_machine_vmware ?= "AUTOINC"
-SRCREV_meta_vmware ?= "AUTOINC"
+SRCREV_machine_vmware ?= "${AUTOREV}"
+SRCREV_meta_vmware ?= "${AUTOREV}"
