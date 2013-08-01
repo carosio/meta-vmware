@@ -1,12 +1,13 @@
 --- open-vm-tools-9.2.3-1031360.orig/lib/misc/hostinfoPosix.c	2013-07-17 15:32:17.419928943 +0200
 +++ open-vm-tools-9.2.3-1031360/lib/misc/hostinfoPosix.c	2013-07-17 15:38:41.594270920 +0200
-@@ -202,6 +202,9 @@ static const DistroInfo distroArray[] =
+@@ -202,6 +202,10 @@ static const DistroInfo distroArray[] =
     {"UnitedLinux",        "/etc/UnitedLinux-release"},
     {"VALinux",            "/etc/va-release"},
     {"Yellow Dog",         "/etc/yellowdog-release"},
 +   {"TPLINO",             "/etc/tplino-release"},
 +   {"TPOSS",              "/etc/tposs-release"}, 
 +   {"SCG",                "/etc/scg-release"},
++   {"CAROS",              "/etc/caros-release"},
     {NULL, NULL},
  };
  
