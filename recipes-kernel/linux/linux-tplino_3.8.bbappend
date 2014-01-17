@@ -1,6 +1,8 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR := "${PR}.6"
+SRC_URI += "file://vmxnet3.cfg"
+
+PR := "${PR}.7"
 
 COMPATIBLE_MACHINE_vmware = "vmware"
 

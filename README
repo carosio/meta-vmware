@@ -22,6 +22,7 @@ Table of Contents
 
 I. Building the meta-vmware BSP layer
 II. OVF Profiling
+III. Changing Netowrk Interface Types 
 
 I. Building the meta-vmware SP layer
 =======================================
@@ -78,3 +79,10 @@ Use the following parameters for customization in local.conf
   when not explicitly set, calculated by multiplying the space used by the actual
   root file system with IMAGE_OVERHEAD_FACTOR (default: 1.3) and adding
   IMAGE_ROOTFS_EXTRA_SPACE (default: 0) and then doing some rounding.
+
+III. Changing Network Interface Types
+====================================
+
+Network interface type is set to e1000 by default. The udev rules are set for e1000
+and vmxnet3 interfaces. No other interface types are supported. Use the same interface
+type for all interfaces, mixing interface types is not supported.
