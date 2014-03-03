@@ -6,10 +6,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0036c1b155f4e999f3e0a373490b5db9"
 
 
 SRC_URI = "http://libdnet.googlecode.com/files/${P}.tgz"
-SRC_URI[sha256sum] = "71302be302e84fc19b559e811951b5d600d976f8" 
+SRC_URI[sha256sum] = "83b33039787cf99990e977cef7f18a5d5e7aaffc4505548a83d31bd3515eb026"
 
 S = "${WORKDIR}/${P}"
-PR = "r0"
+PR = "r1"
 
 inherit autotools binconfig  
 
