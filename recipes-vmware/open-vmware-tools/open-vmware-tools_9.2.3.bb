@@ -3,7 +3,7 @@ SECTION = "vmware-tools"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
-PR = "r13"
+PR = "r14"
 
 SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.3-1031360.tar.gz \
    file://path_vmtools.patch;apply=yes \
@@ -17,7 +17,7 @@ SRC_URI[sha256sum] = "1a004ea1675101fd44cddda299e2e9ac254388769b69f41b7ff5d17975
 
 S = "${WORKDIR}/open-vm-tools-9.2.3-1031360"
 
-DEPENDS = "virtual/kernel glib-2.0 util-linux gcc libdnet "
+DEPENDS = "virtual/kernel glib-2.0 util-linux gcc libdnet rsyslog procps fuse cunit"
 RDEPENDS_${PN} = "util-linux libdnet"
 
 inherit module-base kernel-module-split autotools systemd
@@ -33,8 +33,8 @@ KERNEL_MODULES_META_PACKAGE = "${PN}"
 
 SYSTEMD_SERVICE_${PN} = "vmtoolsd.service"
 
-EXTRA_OECONF = "--without-procps --disable-multimon --disable-docs disable-tests \
-		--without-gtk2 --without-gtkmm --without-icu \
+EXTRA_OECONF = "--without-icu --disable-multimon --disable-docs disable-tests \
+		--without-gtk2 --without-gtkmm \
 		--with-linuxdir=${STAGING_KERNEL_DIR} "
 
 EXTRA_OECONF += "${@base_contains('DISTRO_FEATURES', 'pam', '', '--without-pam', d)} \
@@ -56,4 +56,9 @@ do_install_append() {
     install -d ${D}${systemd_unitdir}/system ${D}${sysconfdir}/vmware-tools
     install -m 644 ${WORKDIR}/*.service ${D}${systemd_unitdir}/system
     install -m 0644 ${WORKDIR}/tools.conf ${D}${sysconfdir}/vmware-tools/tools.conf
+}
+
+do_configure_prepend() {
+    export CUSTOM_PROCPS_NAME=procps
+    export CUSTOM_PROCPS_LIBS=-L${STAGING_LIBDIR}/libprocps.so
 }
