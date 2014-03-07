@@ -3,7 +3,7 @@ SECTION = "vmware-tools"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
-PR = "r15"
+PR = "r16"
 
 SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.3-1031360.tar.gz \
    file://path_vmtools.patch;apply=yes \
@@ -17,7 +17,7 @@ SRC_URI[sha256sum] = "1a004ea1675101fd44cddda299e2e9ac254388769b69f41b7ff5d17975
 
 S = "${WORKDIR}/open-vm-tools-9.2.3-1031360"
 
-DEPENDS = "virtual/kernel glib-2.0 util-linux gcc libdnet procps fuse"
+DEPENDS = "virtual/kernel glib-2.0 util-linux gcc libdnet procps"
 RDEPENDS_${PN} = "util-linux libdnet"
 
 inherit module-base kernel-module-split autotools systemd
