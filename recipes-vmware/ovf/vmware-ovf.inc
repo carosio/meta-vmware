@@ -63,21 +63,18 @@ create_bundle_files () {
         #
 
         # disk names
-        sed s/disk_name_root/${VM_IMAGE_NAME_VER}/g  ${OVFFILES}/ovf-dummy > vmware-image/${VM_IMAGE_NAME_VER}.ovf
-
-        # vmdk disk sizes
-        sed s/vmdk_size_root/${VMDK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
-
+        # vmdk disk sizes 
         # disk sizes
-        sed s/disk_size_root/${REAL_DISK_SIZE_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
-        sed s/disk_size_data/${REAL_DISK_SIZE_DATA}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
-
         # distro name
-        sed s/distro_name/${DISTRO_NAME}_vAPP/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
-
         # hardware specs
-        sed s/core_number/${CORE_NUMBER}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
-        sed s/ram_size/${RAM_SIZE}/g -i vmware-image/${VM_IMAGE_NAME_VER}.ovf
+        sed -e s/@@DISK_NAME_ROOT@@/${VM_IMAGE_NAME_VER}/g \
+            -e s/@@VMDK_SIZE_ROOT@@/${VMDK_SIZE_ROOT}/g \
+            -e s/@@DISK_SIZE_ROOT@@/${REAL_DISK_SIZE_ROOT}/g \
+            -e s/@@DISK_SIZE_DATA@@/${REAL_DISK_SIZE_DATA}/g \
+            -e s/@@DISTRO_NAME@@/${DISTRO_NAME}_vAPP/g \
+            -e s/@@CORE_NUMBER@@/${CORE_NUMBER}/g \
+            -e s/@@RAM_SIZE@@/${RAM_SIZE}/g \
+            ${OVFFILES}/vmware.ovf.in > vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         #
         # replace parameters in mf-file
@@ -88,12 +85,13 @@ create_bundle_files () {
         SHA1KEY_OVF=`sha1sum vmware-image/${VM_IMAGE_NAME_VER}.ovf | awk '{print $1}'`
 
         # set filenames
-        sed s/image_name_root/${VM_IMAGE_NAME_VER}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME_VER}.mf
-        sed s/image_name/${VM_IMAGE_NAME_VER}/g  ${OVFFILES}/mf-dummy > vmware-image/${VM_IMAGE_NAME_VER}.mf
+        sed -e s/@@IMAGE_NAME_ROOT@@/${VM_IMAGE_NAME_VER}/g \
+            -e s/@@IMAGE_NAME@@/${VM_IMAGE_NAME_VER}/g \
+            ${OVFFILES}/vmware.mf.in > vmware-image/${VM_IMAGE_NAME_VER}.mf
 
         # set keys
-        sed s/sha1Key_VMDK_ROOT/${SHA1KEY_VMDK_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.mf
-        sed s/sha1Key_OVF/${SHA1KEY_OVF}/g -i vmware-image/${VM_IMAGE_NAME_VER}.mf
+        sed s/@@SHA1KEY_VMDK_ROOT@@/${SHA1KEY_VMDK_ROOT}/g -i vmware-image/${VM_IMAGE_NAME_VER}.mf
+        sed s/@@SHA1KEY_OVF@@/${SHA1KEY_OVF}/g -i vmware-image/${VM_IMAGE_NAME_VER}.mf
 
         # zip files
         zip -r ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}-OVF-DEPLOY vmware-image
