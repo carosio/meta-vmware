@@ -4,7 +4,7 @@
 python __anonymous() {
     # Set OVF variables only if target is "vmware"
     if base_contains("MACHINE", "vmware", "1", "", d) == "1":
-        d.appendVar("DEPENDS",  " zip-native vmware-disklib vmware-ovftool ")
+        d.appendVar("DEPENDS",  " qemu-native ")
         if not d.getVar("CORE_NUMBER"):
             d.setVar("CORE_NUMBER", "1")
         if not d.getVar("RAM_SIZE"):
@@ -35,24 +35,23 @@ create_bundle_files () {
         echo "************"
         echo Converting ROOT partition
         echo Source Image: ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.vmdk
-        echo Target Image: ${WORKDIR}/vmware-image/${VM_IMAGE_NAME_VER}.vmdk
+        echo Target Image: ${WORKDIR}/vmware-image/${VM_IMAGE_NAME_VER}-disk1.vmdk
         echo "************"
-        vmware-vdiskmanager -r ${VM_IMAGE_NAME}.vmdk -t 5 ${WORKDIR}/vmware-image/${VM_IMAGE_NAME_VER}.vmdk
-
+        qemu-img convert -O vmdk -o subformat=streamOptimized ${VM_IMAGE_NAME}.vmdk ${WORKDIR}/vmware-image/${VM_IMAGE_NAME_VER}-disk1.vmdk
         cd ${WORKDIR}
 
         # set size parameter of vmdk
-        VMDK_SIZE_ROOT=`du -b vmware-image/${VM_IMAGE_NAME_VER}.vmdk | awk '{ print $1 }'`
+        VMDK_USED_ROOT=`du -Lb ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.vmdk | awk '{ print $1 }'`
+        VMDK_SIZE_ROOT=`du -b vmware-image/${VM_IMAGE_NAME_VER}-disk1.vmdk | awk '{ print $1 }'`
 
         # set size parameter of real file space in byte
       	# if the size of the root file system is set, use that,
-	      # else use actual size of file
-      	if [ -n "${DISK_SIZE_ROOT}" ]
-	       then
+	# else use actual size of file
+	if [ -n "${DISK_SIZE_ROOT}" ]; then
             REAL_DISK_SIZE_ROOT=`expr ${IMAGE_ROOTFS_SIZE} \* 1024 \* 105 \/ 100`
-	       else
-            REAL_DISK_SIZE_ROOT=`du -Lb ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.hdddirect | awk '{ print $1 }'`
-	      fi
+	else
+            REAL_DISK_SIZE_ROOT=`du -Lb --apparent-size ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME}.hdddirect | awk '{ print $1 }'`
+	fi
 
         #
         # replace parameters in OVF profile
@@ -63,13 +62,13 @@ create_bundle_files () {
         # disk sizes
         # distro name
         # hardware specs
-
-        sed -e s/@@DISK_NAME_ROOT@@/${VM_IMAGE_NAME_VER}/g  \
-            -e s/@@VMDK_SIZE_ROOT@@/${VMDK_SIZE_ROOT}/g  \
-            -e s/@@DISK_SIZE_ROOT@@/${REAL_DISK_SIZE_ROOT}/g  \
-            -e s/@@DISTRO_NAME@@/${DISTRO_NAME}_vAPP/g  \
-            -e s/@@CORE_NUMBER@@/${CORE_NUMBER}/g  \
-            -e s/@@RAM_SIZE@@/${RAM_SIZE}/g  \
+        sed -e s/@@DISK_NAME_ROOT@@/${VM_IMAGE_NAME_VER}-disk1.vmdk/g \
+            -e s/@@VMDK_SIZE_ROOT@@/${VMDK_SIZE_ROOT}/g \
+            -e s/@@VMDK_USED_ROOT@@/${VMDK_USED_ROOT}/g \
+            -e s/@@DISK_SIZE_ROOT@@/${REAL_DISK_SIZE_ROOT}/g \
+            -e s/@@DISTRO_NAME@@/${DISTRO_NAME}_vAPP/g \
+            -e s/@@CORE_NUMBER@@/${CORE_NUMBER}/g \
+            -e s/@@RAM_SIZE@@/${RAM_SIZE}/g \
             ${OVFFILES}/virtualbox.ovf.in > vmware-image/${VM_IMAGE_NAME_VER}.ovf
 
         #
@@ -77,20 +76,19 @@ create_bundle_files () {
         #
 
         # create sha1Key of vAPP arts
-        SHA1KEY_VMDK_ROOT=`sha1sum vmware-image/${VM_IMAGE_NAME_VER}.vmdk | awk '{print $1}'`
+        SHA1KEY_VMDK_ROOT=`sha1sum vmware-image/${VM_IMAGE_NAME_VER}-disk1.vmdk | awk '{print $1}'`
         SHA1KEY_OVF=`sha1sum vmware-image/${VM_IMAGE_NAME_VER}.ovf | awk '{print $1}'`
 
         # set filenames
         # set keys
-        sed -e s/@@IMAGE_NAME_ROOT@@/${VM_IMAGE_NAME_VER}/g  \
-            -e s/@@SHA1KEY_VMDK_ROOT@@/${SHA1KEY_VMDK_ROOT}/g  \
-            ${OVFFILES}/virtualbox.mf.in > vmware-image/${VM_IMAGE_NAME_VER}.mf
+        sed -e s/@@IMAGE_NAME_ROOT@@/${VM_IMAGE_NAME_VER}-disk1.vmdk/g \
+            -e s/@@IMAGE_NAME_OVF@@/${VM_IMAGE_NAME_VER}.ovf/g \
+            -e s/@@SHA1KEY_VMDK_ROOT@@/${SHA1KEY_VMDK_ROOT}/g \
+            -e s/@@SHA1KEY_OVF@@/${SHA1KEY_OVF}/g \
+            ${OVFFILES}/ova.mf.in > vmware-image/${VM_IMAGE_NAME_VER}.mf
 
-        # zip files
-        zip -r ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}-OVF-DEPLOY vmware-image
-        
-        # ova file 
-        ovftool -o vmware-image/${VM_IMAGE_NAME_VER}.ovf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}.ova
+        # ova file
+        tar --mode=0644 --owner=65534 --group=65534 -cf ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_NAME_VER}.ova -C vmware-image ${VM_IMAGE_NAME_VER}.ovf ${VM_IMAGE_NAME_VER}.mf ${VM_IMAGE_NAME_VER}-disk1.vmdk
 
         # delete folder to free space
         rm -rf vmware-image

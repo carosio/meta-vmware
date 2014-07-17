@@ -22,7 +22,7 @@ Table of Contents
 
 I. Building the meta-vmware BSP layer
 II. OVF Profiling
-III. Changing Netowrk Interface Types 
+III. Changing Netowrk Interface Types
 
 I. Building the meta-vmware SP layer
 =======================================
@@ -57,11 +57,7 @@ II. OVF Profiling
 
 This release adds OVF profiling support to build vAPPs.
 
-To add OVF support to a new image
-* register with VMware and download VMware-vix-disklib-1.2.0-230216.x86_64.tar.gz
-from https://my.vmware.com/group/vmware/get-download?downloadGroup=VDDK-1-2 into
-the recipes-vmware/vmware-disklib/files directory
-* add the following line to your image recipe:
+To add OVF support to a new image add the following line to your image recipe:
 
   require recipes-vmware/ovf/vmware-ovf.inc
 
