@@ -3,7 +3,7 @@ SECTION = "vmware-tools"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
-PR = "r16"
+PR = "r17"
 
 SRC_URI = "http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/open-vm-tools-9.2.3-1031360.tar.gz \
    file://path_vmtools.patch;apply=yes \
@@ -51,6 +51,8 @@ FILES_${PN}-locale += "/usr/share/open-vm-tools/messages"
 FILES_${PN}-dev += "/usr/lib/open-vm-tools/plugins/common/lib*.la"
 FILES_${PN}-dbg += "/usr/lib/open-vm-tools/plugins/common/.debug \
 		    /usr/lib/open-vm-tools/plugins/vmsvc/.debug"
+
+CONFFILES_${PN} += "${sysconfdir}/vmware-tools/tools.conf"
 
 do_install_append() {
     install -d ${D}${systemd_unitdir}/system ${D}${sysconfdir}/vmware-tools
