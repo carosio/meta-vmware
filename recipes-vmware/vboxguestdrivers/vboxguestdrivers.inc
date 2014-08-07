@@ -9,7 +9,7 @@ DEPENDS = "virtual/kernel eglibc"
 
 inherit module kernel-module-split
 
-COMPATIBLE_MACHINE = "(vmware|qemux86|qemux86-64)"
+COMPATIBLE_MACHINE = "(vmware|virtualbox|qemux86|qemux86-64)"
 
 VBOX_NAME = "VirtualBox-${PV}"
 
