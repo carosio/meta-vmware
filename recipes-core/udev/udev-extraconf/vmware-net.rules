@@ -4,9 +4,13 @@ ACTION=="remove", GOTO="bsp_net_name_end"
 SUBSYSTEM!="net", GOTO="bsp_net_name_end"
 
 # VMWare ESXi
+ATTR{address}=="00:05:69:*", NAME:="ven%n"
+ATTR{address}=="00:0C:29:*", NAME:="ven%n"
+ATTR{address}=="00:1C:14:*", NAME:="ven%n"
 ATTR{address}=="00:50:56:*", NAME:="ven%n"
 
 # VirtualBox
+ATTR{address}=="00:0F:4F:*", NAME:="ven%n"
 ATTR{address}=="08:00:27:*", NAME:="ven%n"
 
 LABEL="bsp_net_name_end"
