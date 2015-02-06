@@ -1,8 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+PR := "${PR}.1"
+
 SRC_URI += "file://vmxnet3.cfg \
 	    file://veth.cfg \
-	    file://ide-off.cfg"
+	    file://ide-off.cfg \
+	    file://pvscsi.cfg"
 
 COMPATIBLE_MACHINE_vmware = "vmware"
 COMPATIBLE_MACHINE_virtualbox = "virtualbox"
