@@ -21,8 +21,8 @@ KMACHINE_virtualbox = "common-pc-64"
 
 KERNEL_FEATURES_append = " cfg/smp.scc"
 
-SRCREV_machine_vmware ?= "${AUTOREV}"
-SRCREV_machine_virtualbox ?= "${AUTOREV}"
+SRCREV_machine_vmware ?= "5ff54d8fbf74278e9e5074cbba516a14f0915ff7"
+SRCREV_machine_virtualbox ?= "5ff54d8fbf74278e9e5074cbba516a14f0915ff7"
 
 # SRCREV_meta_vmware ?= "${AUTOREV}"
 # SRCREV_meta_virtualbox ?= "${AUTOREV}"
