@@ -110,10 +110,10 @@
         <rasd:AddressOnParent>7</rasd:AddressOnParent>
         <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
         <rasd:Connection>ALL VLANs</rasd:Connection>
-        <rasd:Description>E1000 ethernet adapter on &quot;All VLANs&quot;</rasd:Description>
+        <rasd:Description>VMXNET3 ethernet adapter on &quot;All VLANs&quot;</rasd:Description>
         <rasd:ElementName>Ethernet 1</rasd:ElementName>
         <rasd:InstanceID>9</rasd:InstanceID>
-        <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
+        <rasd:ResourceSubType>VmxNet3</rasd:ResourceSubType>
         <rasd:ResourceType>10</rasd:ResourceType>
         <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true"/>
         <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="32"/>
@@ -123,10 +123,10 @@
         <rasd:AddressOnParent>8</rasd:AddressOnParent>
         <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
         <rasd:Connection>ALL VLANs</rasd:Connection>
-        <rasd:Description>E1000 ethernet adapter on &quot;ALL VLANs&quot;</rasd:Description>
+        <rasd:Description>VMXNET3 ethernet adapter on &quot;ALL VLANs&quot;</rasd:Description>
         <rasd:ElementName>Ethernet 2</rasd:ElementName>
         <rasd:InstanceID>10</rasd:InstanceID>
-        <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
+        <rasd:ResourceSubType>VmxNet3</rasd:ResourceSubType>
         <rasd:ResourceType>10</rasd:ResourceType>
         <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true"/>
         <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="34"/>
@@ -136,10 +136,10 @@
         <rasd:AddressOnParent>9</rasd:AddressOnParent>
         <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
         <rasd:Connection>ALL VLANs</rasd:Connection>
-        <rasd:Description>E1000 ethernet adapter on &quot;ALL VLANs&quot;</rasd:Description>
+        <rasd:Description>VMXNET3 ethernet adapter on &quot;ALL VLANs&quot;</rasd:Description>
         <rasd:ElementName>Ethernet 3</rasd:ElementName>
         <rasd:InstanceID>11</rasd:InstanceID>
-        <rasd:ResourceSubType>E1000</rasd:ResourceSubType>
+        <rasd:ResourceSubType>VmxNet3</rasd:ResourceSubType>
         <rasd:ResourceType>10</rasd:ResourceType>
         <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true"/>
         <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="35"/>
