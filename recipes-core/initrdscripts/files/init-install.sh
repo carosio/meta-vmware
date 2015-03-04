@@ -42,7 +42,8 @@ echo "*****************"
 
 # Get user choice
 while true; do
-    echo -n "Proceed with installation, all existing data will be destroyed? [y/n] "
+    echo    "This will install a new release, all existing data will be DESTROYED."
+    echo -n "Proceed with installation? [y/n] "
     read answer
     if [ "$answer" = "y" -o "$answer" = "n" ]; then
         break
@@ -130,9 +131,9 @@ umount /src_root
 
 sync
 
-echo "Installation down, press ENTER"
+echo "Installation complete, press ENTER to exit."
 
 read enter
 
-echo "Shutdown..."
+echo "Shutting down, bye."
 poweroff -f
