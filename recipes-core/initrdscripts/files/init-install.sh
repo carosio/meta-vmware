@@ -7,15 +7,83 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-boot_device=sda
-data_device=sdb
+boot_device="__TARGET_DEVICE__"
 
-if [ ! -r /sys/block/${boot_device}/dev -o ! -r /sys/block/${data_device}/dev ]; then
-    ls -l /sys/block
-    ls -l /sys/block/*
-    echo "Invalid appliance layout, one of the disks is missing."
+list_devices() {
+    # copied from poky
+    # Get a list of hard drives
+    hdnamelist=""
+    live_dev_name=${1%%/*}
+    live_dev_name=${live_dev_name%%[0-9]*}
+
+    echo "Searching for hard drives ..."
+
+    for device in `ls /sys/block/`; do
+	case $device in
+	    loop*)
+		# skip loop device
+		;;
+	    sr*)
+		# skip CDROM device
+		;;
+	    ram*)
+		# skip ram device
+		;;
+	    *)
+		# skip the device LiveOS is on
+		# Add valid hard drive name to the list
+		if [ "$device" != "$live_dev_name" -a -e /dev/$device ]; then
+		    hdnamelist="$hdnamelist $device"
+		fi
+		;;
+	esac
+    done
+
+    for hdname in $hdnamelist; do
+	# Display found hard drives and their basic info
+	echo "-------------------------------"
+	echo /dev/$hdname
+	if [ -r /sys/block/$hdname/device/vendor ]; then
+	    echo -n "VENDOR="
+	    cat /sys/block/$hdname/device/vendor
+	fi
+	if [ -r /sys/block/$hdname/device/model ]; then
+	    echo -n "MODEL="
+	    cat /sys/block/$hdname/device/model
+	fi
+	if [ -r /sys/block/$hdname/device/uevent ]; then
+	    echo -n "UEVENT="
+	    cat /sys/block/$hdname/device/uevent
+	fi
+	echo
+    done
+}
+
+
+
+### MAIN ###
+
+if [ -n "$boot_device" -a ! -r /sys/block/${boot_device}/dev ]; then
+    echo "WARNING: The specified target device /dev/${boot_device} could not be found!"
+    echo "Press ENTER to proceed."
+    boot_device=""
+    read
+fi
+
+if [ -z "${boot_device}"] ; then
+    list_devices
+    echo -n "Enter target device name: "
+    read user_input
+    boot_device=${user_input#/dev/}
+fi
+
+if [ -r /sys/block/${boot_device}/dev ]; then
+    echo "Installing image on /dev/${boot_device} ..."
+else
+    echo "Invalid target device: /dev/${boot_device}. Installation aborted."
     exit 1
 fi
+
 
 #
 # The udev automounter can cause pain here, kill it
@@ -27,7 +95,6 @@ rm -f /etc/udev/scripts/mount*
 # Unmount anything the automounter had mounted
 #
 umount /dev/${boot_device}* 2> /dev/null || /bin/true
-umount /dev/${data_device}* 2> /dev/null || /bin/true
 
 if [ ! -b /dev/loop0 ] ; then
     mknod /dev/loop0 b 7 0
@@ -66,23 +133,15 @@ parted -s /dev/sda -- mklabel gpt \
        set 1 bios_grub on \
        set 2 boot on
 
-echo "Creating new GPT label and partitions on /dev/${data_device} ..."
-parted -s /dev/${data_device} -- mklabel gpt \
-       mkpart Data 0% 100%
-
 biosfs=/dev/${boot_device}1
 efifs=/dev/${boot_device}2
 rootfs=/dev/${boot_device}3
-datafs=/dev/${data_device}1
 
 echo "Formatting $efifs to FAT32..."
 mkfs.vfat -F 32 ${efifs}
 
 echo "Formatting $rootfs to btrfs..."
 mkfs.btrfs -f ${rootfs}
-
-echo "Formatting $datafs to ext4..."
-mkfs.ext4 -b 4096 ${datafs}
 
 mkdir /tgt_root
 mkdir /src_root
@@ -128,6 +187,8 @@ echo "(hd0) /dev/${boot_device}" > /tgt_root/boot/grub/device.map
 
 umount /tgt_root
 umount /src_root
+
+# TODO: Include additional setup here
 
 sync
 
