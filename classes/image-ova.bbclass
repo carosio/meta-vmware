@@ -33,13 +33,17 @@ create_ova () {
 
         # Empty disk could be deployed without a vmdk file but virtualbox does not understand that (https://www.virtualbox.org/ticket/13354)
         qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk1.vmdk ${DISK_SIZE_BOOT}G
-        qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk2.vmdk ${DISK_SIZE_DATA}G
 	cp ${REAL_INSTALL_IMG} ${WORKDIR}/ova-image/${INSTALL_IMG_NAME}
 
         # Actual size of the created VMDK files.
         DISK_BOOT_VMDK_SIZE=`du -b ova-image/${IMAGE_NAME}-disk1.vmdk | awk '{ print $1 }'`
-        DISK_DATA_VMDK_SIZE=`du -b ova-image/${IMAGE_NAME}-disk2.vmdk | awk '{ print $1 }'`
 	DISK_INSTALL_SIZE=`du -b ova-image/${INSTALL_IMG_NAME} | awk '{ print $1 }'`
+
+	# create data disk if size > 0
+	if [ "${DISK_SIZE_DATA}" != 0 ] ; then
+		qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk2.vmdk ${DISK_SIZE_DATA}G
+		DISK_DATA_VMDK_SIZE=`du -b ova-image/${IMAGE_NAME}-disk2.vmdk | awk '{ print $1 }'`
+	fi
 
         # Output some debug variables to the logfile ${WORKDIR}/temp/log.do_ova
         # disk names
@@ -79,23 +83,27 @@ create_ova () {
 	    -e "s|@@OVA_VERSION@@|${OVA_VERSION}|g" \
             ${OVFFILES}/ovf.in > ova-image/${IMAGE_NAME}.ovf
 
+	if [ "${DISK_SIZE_DATA}" != 0 ] ; then
+		sed -i '/__NO_DATA_DISK__/d' ova-image/${IMAGE_NAME}.ovf
+	fi
+
         #
         # replace parameters in mf-file
         #
 
-        # create sha1Key of vAPP parts
-        SHA1KEY_VMDK_BOOT=`sha1sum ova-image/${IMAGE_NAME}-disk1.vmdk | awk '{print $1}'`
-        SHA1KEY_VMDK_DATA=`sha1sum ova-image/${IMAGE_NAME}-disk2.vmdk | awk '{print $1}'`
-        SHA1KEY_INSTALL=`sha1sum ova-image/${INSTALL_IMG_NAME} | awk '{print $1}'`
-        SHA1KEY_OVF=`sha1sum ova-image/${IMAGE_NAME}.ovf | awk '{print $1}'`
+	OVA_FILES=" ${IMAGE_NAME}.ovf ${INSTALL_IMG_NAME} ${IMAGE_NAME}-disk1.vmdk"
+	if [ "${DISK_SIZE_DATA}" != 0 ] ; then
+		OVA_FILES="${OVA_FILES} ${IMAGE_NAME}-disk2.vmdk"
+	fi
 
-        echo "SHA1(${IMAGE_NAME}.ovf)= ${SHA1KEY_OVF}" > ova-image/${IMAGE_NAME}.mf
-        echo "SHA1(${IMAGE_NAME}-disk1.vmdk)= ${SHA1KEY_VMDK_BOOT}" >> ova-image/${IMAGE_NAME}.mf
-        echo "SHA1(${IMAGE_NAME}-disk2.vmdk)= ${SHA1KEY_VMDK_DATA}" >> ova-image/${IMAGE_NAME}.mf
-        echo "SHA1(${INSTALL_IMG_NAME})= ${SHA1KEY_INSTALL}" >> ova-image/${IMAGE_NAME}.mf
+        # create sha1Key of vAPP parts and write to mf file
+	for F in ${OVA_FILES}; do
+		SHA1KEY=`sha1sum ova-image/${F} | awk '{print $1}'`
+		echo "SHA1(${F})= ${SHA1KEY}" >> ova-image/${IMAGE_NAME}.mf
+	done
 
         # ova file
-        tar --mode=0644 --owner=65534 --group=65534 -cf ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.ova -C ova-image ${IMAGE_NAME}.ovf ${IMAGE_NAME}.mf ${IMAGE_NAME}-disk1.vmdk ${IMAGE_NAME}-disk2.vmdk ${INSTALL_IMG_NAME}
+        tar --mode=0644 --owner=65534 --group=65534 -cf ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.ova -C ova-image $OVA_FILES ${IMAGE_NAME}.mf
 
         # delete folder to free space
         # rm -rf ova-image
