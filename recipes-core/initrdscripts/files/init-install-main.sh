@@ -111,11 +111,11 @@ fi
 
 # Handling of the target boot partition
 echo "Preparing boot partition..."
-if [ -f /etc/grub.d/42_tplino ] ; then
+if [ -f /etc/grub.d/42_caros ] ; then
     echo "Preparing custom grub2 menu..."
     GRUBCFG="/tgt_root/boot/grub/grub.cfg"
     mkdir -p $(dirname $GRUBCFG)
-    cp /etc/grub.d/42_tplino $GRUBCFG
+    cp /etc/grub.d/42_caros $GRUBCFG
     sed -i "s@__ROOTFS__@$rootfs $rootwait@g" $GRUBCFG
     sed -i "s/__VIDEO_MODE__/$3/g" $GRUBCFG
     sed -i "s/__VGA_MODE__/$4/g" $GRUBCFG

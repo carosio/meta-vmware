@@ -1,4 +1,4 @@
-DECRIPTION = "This will setup TPLINO so it can be used with vagrant."
+DECRIPTION = "This will setup CarOS so it can be used with vagrant."
 SECTION = "vagrant"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
@@ -9,7 +9,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRCREV="09aed15add861b5070d5efc91e0790756e3327eb"
 
-SRC_URI = "file://tplino-vagrant.pub \
+SRC_URI = "file://caros-vagrant.pub \
     file://vagrant-sudoers "
 
 RDEPENDS_${PN} = " vboxguestdrivers sudo bash wget "
@@ -26,7 +26,7 @@ USERADD_PACKAGES = "${PN}"
 USERADD_PARAM_${PN} = "-m -g users -G vagrant -s /bin/sh vagrant"
 GROUPADD_PARAM_${PN} = "vagrant"
 
-VAGRANT_PUBLIC_KEY ?= "tplino-vagrant.pub"
+VAGRANT_PUBLIC_KEY ?= "caros-vagrant.pub"
 
 do_install_append() {
     install -d ${D}${sysconfdir}/sudoers.d
