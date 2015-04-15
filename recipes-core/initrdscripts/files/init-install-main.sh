@@ -75,6 +75,9 @@ parted -s /dev/sda -- mklabel gpt \
        set 1 bios_grub on \
        set 2 boot on
 
+# wait for devices
+udevadm settle
+
 biosfs=/dev/${boot_device}1
 efifs=/dev/${boot_device}2
 rootfs=/dev/${boot_device}3
