@@ -91,19 +91,21 @@ create_ova () {
         # replace parameters in mf-file
         #
 
-	OVA_FILES=" ${IMAGE_NAME}.ovf ${INSTALL_IMG_NAME} ${IMAGE_NAME}-disk1.vmdk"
+	OVF_FILE="${IMAGE_NAME}.ovf"
+	DEVICE_FILES="${IMAGE_NAME}-disk1.vmdk"
 	if [ "${DISK_SIZE_DATA}" != 0 ] ; then
-		OVA_FILES="${OVA_FILES} ${IMAGE_NAME}-disk2.vmdk"
+		DEVICE_FILES="${DEVICE_FILES} ${IMAGE_NAME}-disk2.vmdk"
 	fi
+	DEVICE_FILES="${DEVICE_FILES} ${INSTALL_IMG_NAME}"
 
         # create sha1Key of vAPP parts and write to mf file
-	for F in ${OVA_FILES}; do
+	for F in ${OVF_FILE} ${DEVICE_FILES}; do
 		SHA1KEY=`sha1sum ova-image/${F} | awk '{print $1}'`
 		echo "SHA1(${F})= ${SHA1KEY}" >> ova-image/${IMAGE_NAME}.mf
 	done
 
         # ova file
-        tar --mode=0644 --owner=65534 --group=65534 -cf ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.ova -C ova-image $OVA_FILES ${IMAGE_NAME}.mf
+        tar --mode=0644 --owner=65534 --group=65534 -cf ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.ova -C ova-image $OVF_FILE ${IMAGE_NAME}.mf $DEVICE_FILES
 
         # delete folder to free space
         # rm -rf ova-image
