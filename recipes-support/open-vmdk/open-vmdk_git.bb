@@ -16,7 +16,7 @@ SRC_URI = "git://github.com/vmware/open-vmdk;protocol=git"
 
 S = "${WORKDIR}/git"
 
-BBCLASSEXTEND = "nativesdk"
+BBCLASSEXTEND = "native nativesdk"
 
 do_install() {
         install -d ${D}${bindir}

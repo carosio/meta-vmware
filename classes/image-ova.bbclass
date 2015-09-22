@@ -32,7 +32,8 @@ create_ova () {
         mkdir -p ${WORKDIR}/ova-image
 
         # Empty disk could be deployed without a vmdk file but virtualbox does not understand that (https://www.virtualbox.org/ticket/13354)
-        qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk1.vmdk ${DISK_SIZE_BOOT}G
+        qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk1.vmdk.pre ${DISK_SIZE_BOOT}G
+        vmdk-convert ${WORKDIR}/ova-image/${IMAGE_NAME}-disk1.vmdk.pre ${WORKDIR}/ova-image/${IMAGE_NAME}-disk1.vmdk
 	cp ${REAL_INSTALL_IMG} ${WORKDIR}/ova-image/${INSTALL_IMG_NAME}
 
         # Actual size of the created VMDK files.
@@ -41,7 +42,8 @@ create_ova () {
 
 	# create data disk if size > 0
 	if [ "${DISK_SIZE_DATA}" != 0 ] ; then
-		qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk2.vmdk ${DISK_SIZE_DATA}G
+		qemu-img create -f vmdk -o subformat=streamOptimized ${WORKDIR}/ova-image/${IMAGE_NAME}-disk2.vmdk.pre ${DISK_SIZE_DATA}G
+		vmdk-convert ${WORKDIR}/ova-image/${IMAGE_NAME}-disk2.vmdk.pre ${WORKDIR}/ova-image/${IMAGE_NAME}-disk2.vmdk
 		DISK_DATA_VMDK_SIZE=`du -b ova-image/${IMAGE_NAME}-disk2.vmdk | awk '{ print $1 }'`
 	fi
 
@@ -120,3 +122,4 @@ python do_ova() {
 addtask ova after do_bootimg before do_build
 
 do_ova[depends] += "qemu-native:do_populate_sysroot"
+do_ova[depends] += "open-vmdk-native:do_populate_sysroot"
