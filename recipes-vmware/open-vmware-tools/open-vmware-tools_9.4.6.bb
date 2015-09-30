@@ -50,7 +50,7 @@ EXTRA_OECONF = "--without-icu --disable-multimon --disable-docs --disable-tests 
 		--with-linuxdir=${STAGING_KERNEL_DIR} --without-kernel-modules"
 
 EXTRA_OECONF += "${@base_contains('DISTRO_FEATURES', 'pam', '', '--without-pam', d)} \
-                 ${@base_contains('DISTRO_FEATURES', 'x11', '', '--without-x', d)}"
+                 --without-x"
 
 EXTRA_OEMAKE = "MODULES_DIR=/lib/modules/${KERNEL_VERSION}/kernel KERNEL_RELEASE=${KERNEL_VERSION}"
 
