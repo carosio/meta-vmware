@@ -3,7 +3,7 @@ SECTION = "vmware-tools"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "http://sourceforge.net/projects/open-vm-tools/files/open-vm-tools/stable-9.4.x/open-vm-tools-9.4.6-1770165.tar.gz \
    file://patches/fix_kernel_include_patch.patch \
