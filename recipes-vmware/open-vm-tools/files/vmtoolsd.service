@@ -4,7 +4,7 @@ ConditionVirtualization=vmware
 
 [Service]
 ExecStart=/usr/bin/vmtoolsd
-Restart=on-failure
+Restart=always
 KillSignal=SIGKILL
 
 [Install]
