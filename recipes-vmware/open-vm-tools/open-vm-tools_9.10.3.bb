@@ -30,7 +30,7 @@ SRC_URI[sha256sum] = "380c0e83c61f3c8e1f101392f6b872c69e52f584dfe0bd15ba9984c104
 
 S = "${WORKDIR}/open-vm-tools-stable-${PV}/open-vm-tools"
 
-DEPENDS = "virtual/kernel glib-2.0 util-linux libdnet procps"
+DEPENDS = "virtual/kernel glib-2.0 util-linux libdnet procps openssl"
 RDEPENDS_${PN} = "util-linux libdnet"
 
 inherit module-base kernel-module-split autotools systemd
