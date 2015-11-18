@@ -3,31 +3,32 @@ SECTION = "vmware-tools"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5804fe91d3294da4ac47c02b454bbc8a"
 
-PR = "r5"
+PR = "r1"
 
-SRC_URI = "http://sourceforge.net/projects/open-vm-tools/files/open-vm-tools/stable-9.4.x/open-vm-tools-9.4.6-1770165.tar.gz \
-   file://patches/fix_kernel_include_patch.patch \
-   file://patches/fix_distrofile.patch \
-   file://patches/default_source.patch \
-   file://patches/upstream/3a9f229_Harden-HostinfoOSData-against-PATH-attacks \
-   file://patches/upstream/54780b8_Debian-guys-want-to-play-with-FreeBSD-kernels-and-Linux-userland \
-   file://patches/from_fedora/sizeof_argument.patch \
-   file://patches/from_arch/0001-Remove-unused-DEPRECATED-macro.patch \
-   file://patches/from_arch/0002-Conditionally-define-g_info-macro.patch \
-   file://patches/from_arch/0003-Add-kuid_t-kgid_t-compatibility-layer.patch \
-   file://patches/from_arch/0004-Use-new-link-helpers.patch \
-   file://patches/from_arch/0005-Update-hgfs-file-operations-for-newer-kernels.patch \
-   file://patches/from_arch/0006-Fix-vmxnet-module-on-kernels-3.16.patch \
-   file://patches/from_arch/0007-Fix-vmhgfs-module-on-kernels-3.16.patch \
-   file://patches/from_arch/0008-Fix-segfault-in-vmhgfs.patch \
-   file://patches/debian/max_nic_count \
-   file://tools.conf \
-   file://vmtoolsd.service"
+SRC_URI = "https://github.com/vmware/open-vm-tools/archive/stable-${PV}.tar.gz"
 
-SRC_URI[md5sum] = "3969daf1535d34e1c5f0c87a779b7642"
-SRC_URI[sha256sum] = "54d7a83d8115124e4b809098b08d7017ba50828801c2f105cdadbc85a064a079"
+# SRC_URI += "file://patches/fix_kernel_include_patch.patch"
+# SRC_URI += "file://patches/fix_distrofile.patch"
+# SRC_URI += "file://patches/default_source.patch"
+# SRC_URI += "file://patches/upstream/3a9f229_Harden-HostinfoOSData-against-PATH-attacks"
+# SRC_URI += "file://patches/upstream/54780b8_Debian-guys-want-to-play-with-FreeBSD-kernels-and-Linux-userland"
+# SRC_URI += "file://patches/from_fedora/sizeof_argument.patch"
+# SRC_URI += "file://patches/from_arch/0001-Remove-unused-DEPRECATED-macro.patch"
+# SRC_URI += "file://patches/from_arch/0002-Conditionally-define-g_info-macro.patch"
+# SRC_URI += "file://patches/from_arch/0003-Add-kuid_t-kgid_t-compatibility-layer.patch"
+# SRC_URI += "file://patches/from_arch/0004-Use-new-link-helpers.patch"
+# SRC_URI += "file://patches/from_arch/0005-Update-hgfs-file-operations-for-newer-kernels.patch"
+# SRC_URI += "file://patches/from_arch/0006-Fix-vmxnet-module-on-kernels-3.16.patch"
+# SRC_URI += "file://patches/from_arch/0007-Fix-vmhgfs-module-on-kernels-3.16.patch"
+# SRC_URI += "file://patches/from_arch/0008-Fix-segfault-in-vmhgfs.patch"
+# SRC_URI += "file://patches/debian/max_nic_count"
+# SRC_URI += "file://tools.conf"
+SRC_URI += "file://vmtoolsd.service"
 
-S = "${WORKDIR}/open-vm-tools-9.4.6-1770165"
+SRC_URI[md5sum] = "3777e30d72ed4098ecff16e6480cf1cc"
+SRC_URI[sha256sum] = "380c0e83c61f3c8e1f101392f6b872c69e52f584dfe0bd15ba9984c1044497ae"
+
+S = "${WORKDIR}/open-vm-tools-stable-${PV}/open-vm-tools"
 
 DEPENDS = "virtual/kernel glib-2.0 util-linux libdnet procps"
 RDEPENDS_${PN} = "util-linux libdnet"
@@ -49,6 +50,9 @@ EXTRA_OECONF = "--without-icu --disable-multimon --disable-docs --disable-tests 
 		--without-gtk2 --without-gtkmm \
 		--with-linuxdir=${STAGING_KERNEL_DIR} --without-kernel-modules"
 
+EXTRA_OECONF += "--enable-deploypkg=no"
+EXTRA_OECONF += "--without-xerces"
+
 EXTRA_OECONF += "${@base_contains('DISTRO_FEATURES', 'pam', '', '--without-pam', d)} \
                  ${@base_contains('DISTRO_FEATURES', 'x11', '', '--without-x', d)}"
 
@@ -69,10 +73,11 @@ CONFFILES_${PN} += "${sysconfdir}/vmware-tools/tools.conf"
 do_install_append() {
     install -d ${D}${systemd_unitdir}/system ${D}${sysconfdir}/vmware-tools
     install -m 644 ${WORKDIR}/*.service ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/tools.conf ${D}${sysconfdir}/vmware-tools/tools.conf
+# install -m 0644 ${WORKDIR}/tools.conf ${D}${sysconfdir}/vmware-tools/tools.conf
 }
 
 do_configure_prepend() {
     export CUSTOM_PROCPS_NAME=procps
     export CUSTOM_PROCPS_LIBS=-L${STAGING_LIBDIR}/libprocps.so
+    export CUSTOM_SSL_CPPFLAGS=-I${STAGING_INCDIR}
 }
