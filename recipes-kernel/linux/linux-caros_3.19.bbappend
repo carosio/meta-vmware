@@ -20,9 +20,10 @@ KMACHINE_virtualbox = "common-pc-64"
 # KARCH_virtualbox  = "x86_64"
 
 KERNEL_FEATURES_append = " cfg/smp.scc"
+KERNEL_FEATURES_append_qemuall=" cfg/virtio.scc"
+KERNEL_FEATURES_append_qemux86=" cfg/paravirt_kvm.scc"
+KERNEL_FEATURES_append_qemux86-64=" cfg/paravirt_kvm.scc"
 
-SRCREV_machine_vmware ?= "31b35da6a5c8a2b162f6c33202e9b64dd13757d5"
-SRCREV_machine_virtualbox ?= "31b35da6a5c8a2b162f6c33202e9b64dd13757d5"
 
-# SRCREV_meta_vmware ?= "${AUTOREV}"
-# SRCREV_meta_virtualbox ?= "${AUTOREV}"
+SRCREV_machine_vmware ?= "e152349de59b43b2a75f2c332b44171df461d5a0"
+SRCREV_machine_virtualbox ?= "e152349de59b43b2a75f2c332b44171df461d5a0"
