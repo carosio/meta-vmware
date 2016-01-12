@@ -24,6 +24,8 @@ KERNEL_FEATURES_append_qemuall=" cfg/virtio.scc"
 KERNEL_FEATURES_append_qemux86=" cfg/paravirt_kvm.scc"
 KERNEL_FEATURES_append_qemux86-64=" cfg/paravirt_kvm.scc"
 
+KERNEL_FEATURES_append = " ./features/scsi/cdrom.scc"
+KERNEL_FEATURES_append = " ./features/scsi/disk.scc"
 
 SRCREV_machine_vmware ?= "e152349de59b43b2a75f2c332b44171df461d5a0"
 SRCREV_machine_virtualbox ?= "e152349de59b43b2a75f2c332b44171df461d5a0"
