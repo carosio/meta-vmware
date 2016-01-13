@@ -10,9 +10,6 @@ SRC_URI += "file://vmxnet3.cfg \
 COMPATIBLE_MACHINE_vmware = "vmware"
 COMPATIBLE_MACHINE_virtualbox = "virtualbox"
 
-KBRANCH_vmware = "standard/common-pc-64/base"
-KBRANCH_virtualbox = "standard/common-pc-64/base"
-
 KMACHINE_vmware = "common-pc-64"
 KMACHINE_virtualbox = "common-pc-64"
 
