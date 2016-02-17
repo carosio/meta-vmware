@@ -4,8 +4,7 @@ PR := "${PR}.1"
 
 SRC_URI += "file://vmxnet3.cfg \
 	    file://veth.cfg \
-	    file://ide-off.cfg \
-	    file://pvscsi.cfg"
+	    file://common-drivers.scc"
 
 COMPATIBLE_MACHINE_vmware = "vmware"
 COMPATIBLE_MACHINE_virtualbox = "virtualbox"
@@ -20,9 +19,6 @@ KERNEL_FEATURES_append = " cfg/smp.scc"
 KERNEL_FEATURES_append_qemuall=" cfg/virtio.scc"
 KERNEL_FEATURES_append_qemux86=" cfg/paravirt_kvm.scc"
 KERNEL_FEATURES_append_qemux86-64=" cfg/paravirt_kvm.scc"
-
-KERNEL_FEATURES_append = " ./features/scsi/cdrom.scc"
-KERNEL_FEATURES_append = " ./features/scsi/disk.scc"
 
 # SRCREV_machine_vmware ?= "2dadc3524fcbce0c46f5db65b7c20c673fc60503"
 # SRCREV_machine_virtualbox ?= "2dadc3524fcbce0c46f5db65b7c20c673fc60503"

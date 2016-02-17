@@ -1,0 +1,4 @@
+kconf hardware cfg/ide-off.cfg
+kconf hardware cfg/ata-driver.cfg
+kconf hardware cfg/hw-scsi-driver.cfg
+kconf hardware cfg/virt-scsi-driver.cfg
