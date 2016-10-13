@@ -1,10 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR := "${PR}.1"
+PR := "${PR}.2"
 
 SRC_URI += "file://vmxnet3.cfg \
 	    file://veth.cfg \
-	    file://common-drivers.scc"
+	    file://common-drivers.scc \
+	    file://virtio.cfg "
 
 COMPATIBLE_MACHINE_vmware = "vmware"
 COMPATIBLE_MACHINE_virtualbox = "virtualbox"
