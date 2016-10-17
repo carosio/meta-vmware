@@ -11,7 +11,7 @@ libexecdir = "${base_libdir}/udev"
 
 do_install () {
     install -d ${D}${libexecdir}/rules.d
-    install -m 0644 ${WORKDIR}/vmware-net.rules ${D}${libexecdir}/rules.d/79-vmware-net.rules
+    install -m 0644 ${WORKDIR}/virtual-net.rules ${D}${libexecdir}/rules.d/79-virtual-net.rules
 }
 
 RDEPENDS_${PN} = "udev"
