@@ -13,4 +13,8 @@ ATTR{address}=="00:50:56:*", NAME:="ven%n"
 ATTR{address}=="00:0f:4f:*", NAME:="ven%n"
 ATTR{address}=="08:00:27:*", NAME:="ven%n"
 
+# Openstack
+ATTR{address}=="fa:16:3e:*", NAME:="ven%n"
+
+
 LABEL="bsp_net_name_end"
