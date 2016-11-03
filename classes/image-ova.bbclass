@@ -12,7 +12,7 @@ OVA_VENDOR ??= "Tavelping GmbH"
 OVA_VENDOR_URL ??= "http://www.travelping.com/"
 OVA_VERSION ??= "${DISTRO_VERSION}"
 
-inherit image_types bootimg
+inherit image_types
 
 IMAGE_TYPEDEP_ova = "live"
 IMAGE_TYPES_MASKED += "ova"
