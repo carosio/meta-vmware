@@ -8,7 +8,7 @@ LABELS_append = " ${SYSLINUX_LABELS} "
 INSTALL_IMG ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}-${MACHINE}.iso"
 
 OVA_PRODUCT ??= "${DISTRO_NAME}"
-OVA_VENDOR ??= "Tavelping GmbH"
+OVA_VENDOR ??= "Travelping GmbH"
 OVA_VENDOR_URL ??= "http://www.travelping.com/"
 OVA_VERSION ??= "${DISTRO_VERSION}"
 
